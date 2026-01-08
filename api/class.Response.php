@@ -13,17 +13,15 @@ class Response {
         return $resposta;
     }
 
-    static function Error(string $mensagem, string $type, string $erro, int $code, array|object|null $dados = null) :array{
+    static function Error(string $mensagem, array|object|null $dados = null) :array{
         $resposta = [
             'erro' => true,
-            'type' => $type,
-            'erro' => $error,
             'mensagem' => $mensagem,
         ];
         if(!is_null($dados)){
             $resposta['dados'] = (array) $dados;
         }
-        http_response_code($code);
+        http_response_code(400);
         return $resposta;
     }
 }

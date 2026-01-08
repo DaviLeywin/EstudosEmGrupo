@@ -11,7 +11,7 @@ class DAO {
 
 
     public function init(){
-        $this->pdo = Banco::BuscarConexao();
+        $this->pdo = Database::GetConnection();
         if (!$this->pdo) throw new InvalidArgumentException("me matei n deu!");
         return $this->pdo;
     }
@@ -34,8 +34,8 @@ class DAO {
     
     public function Table(string $tabela){
         $pdo = $this->init();
-        global $ConnB;
-        $banco = $GLOBALS['conn']["banco"];
+        global $db;
+        $banco = $db["database"];
         $tabela = strtolower($tabela);
         $SqlValTabela = 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :banco AND table_name = :tabela';
         $stmt = $this->pdo->prepare($SqlValTabela);
@@ -61,7 +61,7 @@ class DAO {
         return $this;
     }
 
-    public function Dados(object $dados = null){
+    public function Dados(object|array $dados = null){
         if(empty($dados)) throw new InvalidArgumentException("Dados nao podem estar vazios!");
         $dados = (array) $dados;
         foreach($dados as $nome => $value){
@@ -77,17 +77,7 @@ class DAO {
         }
         return $this;
     }
-
-    function CriarGet(){
-        $sql = "SELECT * FROM ".$this->tabela;
-        $sql .=  $this->CriarWhere($this->wheres);
-        $stmt = $this->CriarBind($sql, $this->wheres);
-        $stmt->execute();
-        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if($resultado) return Response::Success("Dados encontrados com sucesso!",$resultado);
-        return Response::Fail("Nenhum registro encontrado!");
-    }
-
+    
     static function CriarWhere($wheres){
         if(empty($wheres))return "";
         $array = [];
@@ -98,9 +88,9 @@ class DAO {
         $sql = ' WHERE'. implode("and",$array);
         return $sql;
     }
-
+    
     static function CriarBind($sql, $wheres){
-        $pdo = Banco::BuscarConexao();
+        $pdo = Database::GetConnection();
         $stmt = $pdo->prepare($sql);
         if(empty($wheres))return $stmt;
         foreach($wheres as $index => $value){
@@ -109,15 +99,26 @@ class DAO {
         }
         return $stmt;
     }
-
+    
     function CriarDelete(){
-        if(empty($this->wheres['id'])) throw new InvalidArgumentException("Dados do where nao pode estar vazio!");
-        $sql = "DELETE FROM ".$this->tabela." WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(":id",$this->wheres['id'],PDO::PARAM_INT);
+        $wheres = $this->wheres;
+        if(empty($wheres)) throw new InvalidArgumentException("Where nao pode estar vazio para metodo delete!");
+        $sql = "DELETE FROM ".$this->tabela;
+        $sql .= $this->CriarWhere($wheres);
+        $stmt = $this->CriarBind($sql, $wheres);
         $stmt->execute();
         if($stmt->rowCount() > 0) return Response::Success("Dados apagados com sucesso!");
-        return Response::Fail("Falha ao apagar os dados!");
+        return Response::Error("Falha ao apagar os dados!");
+    }
+    
+    function CriarGet(){
+        $sql = "SELECT * FROM ".$this->tabela;
+        $sql .=  $this->CriarWhere($this->wheres);
+        $stmt = $this->CriarBind($sql, $this->wheres);
+        $stmt->execute();
+        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($resultado) return Response::Success("Dados encontrados com sucesso!",$resultado);
+        return Response::Error("Nenhum registro encontrado!");
     }
 
     function CriarDescribe(){
@@ -153,7 +154,7 @@ class DAO {
         $stmt->execute();
         $resultado = $this->GetById($tabela, $pdo);
         if($resultado) return Response::Success("Insercao feita com sucesso!",$resultado);
-        return Response::Fail("Falha ao inserir dados!");
+        return Response::Error("Falha ao inserir dados!");
 
     }
 
@@ -172,7 +173,7 @@ class DAO {
         $linhas = $stmt->rowCount();
         $resultado = $this->GetById($tabela, $this->pdo, $this->wheres['id']);
         if($linhas > 0) return Response::Success("atualizacao feita com sucesso!",$resultado);
-        else return Response::Fail("nenhuma linha foi atualizada!");
+        else return Response::Error("nenhuma linha foi atualizada!");
     }
 
 

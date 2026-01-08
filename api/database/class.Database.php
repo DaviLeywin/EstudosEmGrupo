@@ -84,5 +84,5 @@ class Database {
         }
     }
 }
-print_r(Database::RecreateDatabase());
+// print_r(Database::RecreateDatabase());
 ?>
