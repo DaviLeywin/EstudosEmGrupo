@@ -28,7 +28,6 @@ class UsuariosService {
         if($resposta){
             throw new InvalidArgumentExceptionWithData("nao foram encontradas metods referentes ao campos recebidos (camel to snake)",$resposta);
         }
-        return $usuario;
         return UsuariosRepository::AtualizarUsuario($usuario, $url);
     }
 
@@ -45,9 +44,16 @@ class UsuariosService {
         if($resposta) return Response::Error("Erro ao validar tamanho dos campos",$resposta);
 
         $usuario = new UsuariosModel();
-        $resposta = BaseValidator::InserirNoModel($usuario, $dados);
-        if($resposta) throw new InvalidArgumentExceptionWithData("nao foram encontradas metods referentes ao campos recebidos (camel to snake)",$resposta);
-        return $usuario;
+
+        $usuario->UpdateNome($dados['NOME']);
+        $usuario->UpdateBiografia($dados['BIOGRAFIA']);
+        $usuario->UpdateSobrenome($dados['SOBRENOME']);
+        $usuario->UpdateSenhaHash($dados['SENHA_HASH']);
+        $usuario->UpdateFotoDePerfil($dados['FOTO_DE_PERFIL']);
+        $usuario->UpdateNomeDeExibicao($dados['NOME_DE_EXIBICAO']);
+        $usuario->UpdateEmail($dados['EMAIL']);
+        $usuario->UpdateDataDeNascimento($dados['DATA_DE_NASCIMENTO']);
+        $usuario->UpdateNivelId($dados['NIVEL_ID']);
 
         return UsuariosRepository::InserirUsuario($usuario);
     }
@@ -56,7 +62,8 @@ class UsuariosService {
         UsuariosService::BuscarTodosUsuarios();
     }
 }
-// print_r(UsuariosService::AtualizarUsuario([
+// print_r(Usua
+// riosService::AtualizarUsuario([
 //     'NOME' => 'loganiltonpintons',
 //     'BIOGRAFIA' => '',
 //     'SOBRENOME' => 'lopez',
