@@ -7,7 +7,7 @@ class Response {
             'mensagem' => $mensagem,
         ];
         if(!is_null($dados)){
-            $resposta['dados'] = (array) $dados;
+            $resposta['resposta'] = (array) $dados;
         }
         http_response_code(200);
         return $resposta;
@@ -19,7 +19,7 @@ class Response {
             'mensagem' => $mensagem,
         ];
         if(!is_null($dados)){
-            $resposta['dados'] = (array) $dados;
+            $resposta['resposta'] = (array) $dados;
         }
         http_response_code(400);
         return $resposta;

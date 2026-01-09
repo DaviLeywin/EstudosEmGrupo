@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__ . ".\class.BaseController.php";
-require_once __DIR__ . "\..\service\class.UsuariosService.php";
+require_once __DIR__ . '\..\service\class.UsuariosService.php';
 
 class UsuariosController {
     static function BuscarUsuario($request, $url){
@@ -22,6 +21,7 @@ class UsuariosController {
     }
 
     static function InserirUsuario($request, $url){
+        if(empty($request->BODY))return Response::Fail('Dados de insert nao podem estar vazios!');
         UsuariosService::InserirUsuario($request->BODY);
     }
 
