@@ -25,9 +25,7 @@ class UsuariosService {
         $usuario = new UsuariosModel();
 
         $resposta = BaseValidator::InserirNoModel($usuario, $dados);
-        if($resposta){
-            throw new InvalidArgumentExceptionWithData("nao foram encontradas metods referentes ao campos recebidos (camel to snake)",$resposta);
-        }
+        if($resposta) throw new InvalidArgumentExceptionWithData("nao foram encontradas metods referentes ao campos recebidos (camel to snake)",$resposta);
         return UsuariosRepository::AtualizarUsuario($usuario, $url);
     }
 

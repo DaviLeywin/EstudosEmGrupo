@@ -12,7 +12,6 @@ class UsuariosRepository {
     }
 
     static function AtualizarUsuario(UsuariosModel $dados, $url){
-        return $dados;
         return DAO::Put()->Table('usuarios')->Dados($dados)->Where($url)->Execute();
     }
 
@@ -28,15 +27,4 @@ class UsuariosRepository {
         return DAO::Describe()->Table("usuarios")->Execute();   
     }
 }
-// print_r(UsuariosRepository::InserirUsuario([
-//     'NOME' => 'loganiltonpintons',
-//     'BIOGRAFIA' => 'gosto de culinaria',
-//     'SOBRENOME' => 'lopez',
-//     'SENHA_HASH' => '\$2y\$10\$iyWF5OM9zAhwpDNhD10AiOKSs9VIvpFB5xQIg5bkas5oP34/mXeaa',
-//     'FOTO_DE_PERFIL' => 'EstudosEmGrupo/public/assets/images/vermelho.jpg',
-//     'NOME_DE_EXIBICAO' => 'Logan L.',
-//     'EMAIL' => 'davirralmeigcgvda@example.com',
-//     'DATA_DE_NASCIMENTO' => '2008-11-11',
-//     'NIVEL_ID' => 1
-// ]));
 ?>

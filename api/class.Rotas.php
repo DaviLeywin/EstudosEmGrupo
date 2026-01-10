@@ -1,5 +1,6 @@
 <?php
-require "class.Request.php";
+require_once "class.Request.php";
+require_once __DIR__.'..\validator\class.BaseValidator.php';
 
 class Rotas{
     public $rotas;
