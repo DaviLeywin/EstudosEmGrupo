@@ -7,7 +7,7 @@ class DAO {
     public $orderBy;
     public $wheres = [];
     public $dados = [];
-    public $dadosGet = [];
+    public $descricao;
 
 
     public function init(){
@@ -33,17 +33,9 @@ class DAO {
     }
     
     public function Table(string $tabela){
-        $pdo = $this->init();
-        global $db;
-        $banco = $db["database"];
-        $tabela = strtolower($tabela);
-        $SqlValTabela = 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :banco AND table_name = :tabela';
-        $stmt = $this->pdo->prepare($SqlValTabela);
-        $stmt->execute([':banco' =>$banco,  ':tabela' =>$tabela, ]);
-        if(!(bool) $stmt->fetchColumn()){
-            throw new InvalidArgumentException("Tabela $tabela nao existe no banco $banco");
-        }
-        $this->tabela = $tabela;
+        $this->init();
+        $this->tabela = strtolower($tabela);
+        $this->descricao = $this->CriarDescribe();
         return $this;
     }
 
@@ -78,102 +70,97 @@ class DAO {
         return $this;
     }
     
-    static function CriarWhere($wheres){
-        if(empty($wheres))return "";
-        $array = [];
-        foreach($wheres as $index => $value){
-            $index = strtoupper($index);
-            $array[] = " $index = :$index ";
-        }
-        $sql = ' WHERE'. implode("and",$array);
-        return $sql;
-    }
-    
-    static function CriarBind($sql, $wheres){
-        $pdo = Database::GetConnection();
-        $stmt = $pdo->prepare($sql);
-        if(empty($wheres))return $stmt;
-        foreach($wheres as $index => $value){
-            $index = strtoupper($index);
-            $stmt->BindValue(":$index",$value);
-        }
-        return $stmt;
-    }
-    
     function CriarDelete(){
         $wheres = $this->wheres;
         if(empty($wheres)) throw new InvalidArgumentException("Where nao pode estar vazio para metodo delete!");
         $sql = "DELETE FROM ".$this->tabela;
-        $sql .= $this->CriarWhere($wheres);
+        $sql .= $this->CriarDadosSql($wheres, "and","WHERE");
         $stmt = $this->CriarBind($sql, $wheres);
         $stmt->execute();
-        if($stmt->rowCount() > 0) return Response::Success("Dados apagados com sucesso!");
-        return Response::Error("Falha ao apagar os dados!");
+        if($stmt->rowCount() > 0) return true;
+        return false;
     }
     
     function CriarGet(){
         $sql = "SELECT * FROM ".$this->tabela;
-        $sql .=  $this->CriarWhere($this->wheres);
+        $sql .= $this->CriarDadosSql($this->wheres, "and","WHERE");
         $stmt = $this->CriarBind($sql, $this->wheres);
         $stmt->execute();
         $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if($resultado) return Response::Success("Dados encontrados com sucesso!",$resultado);
-        return Response::Error("Nenhum registro encontrado!");
+        if($resultado) return $resultado;
+        else return null;
     }
 
     function CriarDescribe(){
         $sql = "DESCRIBE ".$this->tabela.";";
         $stmt = $this->pdo->query($sql);
         $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if($resultado) return Response::Success("Descricao encontrada com sucesso!",$resultado);
-        return Response::Success("Falha ao buscar descricao!");
+        if($resultado) return $resultado;
+        else return null;
     }
 
-    function GetById($tabela, $pdo, $id = null){
-        $id = !is_null($id) ? $id : $pdo->lastInsertId();
-        $sql = "SELECT * FROM $tabela WHERE ID = :ID;";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(":ID",$id);
-        $stmt->execute();
-        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $resultado;
+    function SqlPost($dados){
+        $sql = "INSERT INTO ".$this->tabela."(" . implode(', ', array_keys($dados)) . ")";
+        return $sql .= " VALUES(:" . implode(', :', array_keys($dados)) . ");";
     }
 
+    function RespostaPostPut(){
+        $id = $this->pdo->lastInsertId();
+        $this->wheres = $id ? ['id' => $id] : array_merge($this->wheres, $this->dados);
+        $dados = $this->CriarGet()[0] ?? null;
+        $resposta = [];
+        foreach($this->descricao as $campos){
+            if($campos['Key'] != 'PRI') continue;
+            $resposta[$campos['Field']] = $dados[$campos['Field']];
+        }
+        return $resposta;
+    }
+    
     function CriarPost(){
         $dados = $this->dados;
         if(is_null($dados)) throw new InvalidArgumentException("Campo dados e obrigatorio para tipo post!");
-        $campos = implode(',',array_keys($dados));
-        $valores = array_map(function($valor){
-            if(is_string($valor)) return "'".$valor."'";
-            return $valor;
-        },array_values($dados));
-        $tabela = $this->tabela;
-        $pdo = $this->pdo;
-        $sql = "INSERT INTO $tabela ($campos) VALUES (". implode(',',$valores) .")";
-        $stmt = $this->pdo->prepare($sql);
+        $sql = $this->SqlPost($dados);
+        $stmt = $this->CriarBind($sql, $dados);
         $stmt->execute();
-        $resultado = $this->GetById($tabela, $pdo);
-        if($resultado) return Response::Success("Insercao feita com sucesso!",$resultado);
-        return Response::Error("Falha ao inserir dados!");
+        $resposta = $this->RespostaPostPut();
+        if($stmt->rowCount() > 0) return $resposta;
+        else return null;
+    }
 
+    function CriarBind($sql, $dados, $stmt = null){
+        $stmt = $stmt ?: $this->pdo->prepare($sql);
+        if(empty($dados))return $stmt;
+        foreach($dados as $index => $value){
+            $index = strtoupper($index);
+            $stmt->BindValue(":$index",$value);
+        }
+        return $stmt;
+    }
+
+    static function CriarDadosSql($dados, string $separacao ,string $inicio){
+        if(empty($dados))return "";
+        $array = [];
+        foreach($dados as $index => $value){
+            $index = strtoupper($index);
+            $array[] = " $index = :$index ";
+        }
+        return " $inicio " . implode($separacao, $array);
     }
 
     function CriarPut(){
-        $dados = $this->dados;
-        if(is_null($dados)) throw new InvalidArgumentException("Campo dados e obrigatorio para tipo post!");
+        if(is_null($this->dados)) throw new InvalidArgumentException("Campo dados e obrigatorio para tipo post!");
         if(empty($this->wheres)) throw new InvalidArgumentException("Campo where e obrigatorio para tipo post!");
-        $tabela = $this->tabela;
-        $set = [];
-        foreach($dados as $index => $valor){  $set[] = " $index = :$index";}
-        $sql = "UPDATE $tabela SET " . implode(",",$set) . " WHERE id = :id";
-        $stmt = $this->pdo->prepare($sql);
-        foreach($dados as $index => $value){ $stmt->BindValue(":$index",$value);}
-        $stmt->BindParam(":id",$this->wheres['id']);
+
+        $sql = "UPDATE ".$this->tabela;
+        $sql .= $this->CriarDadosSql($this->dados,",","SET");
+        $sql .= $this->CriarDadosSql($this->wheres,"and","WHERE");
+        $stmt = $this->CriarBind($sql, $this->dados);
+        $stmt = $this->CriarBind($sql, $this->wheres, $stmt);
+        
         $stmt->execute();
-        $linhas = $stmt->rowCount();
-        $resultado = $this->GetById($tabela, $this->pdo, $this->wheres['id']);
-        if($linhas > 0) return Response::Success("atualizacao feita com sucesso!",$resultado);
-        else return Response::Error("nenhuma linha foi atualizada!");
+        $resposta = $this->RespostaPostPut();
+        if($stmt->rowCount() > 0) return $resposta;
+        else return null;
     }
 
 

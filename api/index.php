@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . "\..\Framework.php";
 require_once "class.Rotas.php";
 require_once "class.Response.php";
+require __DIR__ . '\..\vendor\autoload.php';
 
 $rotas = new Rotas();
 
-// echo json_encode($rotas->Executar());
+$rotas->post("/login","UsuariosController@LogarUsuario",false);
+
+echo json_encode($rotas->executar());

@@ -1,9 +1,5 @@
 <?php
-declare(strict_types=1);
-require_once __DIR__. "\..\config\config.php";
-require_once __DIR__. "\..\config\sqlDatabase.php";
-require_once __DIR__. "\..\class.Response.php";
-
+require_once __DIR__ . '/../class.Response.php';
 class Database {
     static private $host;
     static private $password;
@@ -13,12 +9,12 @@ class Database {
     static private $insert;
 
     static function init(){
-        global $db;
-        global $sql;
-        self::$host = $db['host'];
-        self::$password = $db['password'];
-        self::$user = $db['user'];
-        self::$database = $db['database'];
+        $config = require __DIR__ . '/../config/config.php';
+        $sql = require __DIR__ . '/../config/sqlDatabase.php';
+        self::$password = $config['db']['password'];
+        self::$database = $config['db']['database'];
+        self::$host = $config['db']['host'];
+        self::$user = $config['db']['user'];
         self::$create = $sql['create'];
         self::$insert = $sql['insert'];
     }
@@ -49,7 +45,7 @@ class Database {
 
     static function GetConnection(){
         try{
-            self::init();
+            self::init(); 
             $conn = new PDO("mysql:host=".self::$host.";dbname=".self::$database,self::$user,self::$password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);            
             return $conn;

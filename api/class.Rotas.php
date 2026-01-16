@@ -1,6 +1,6 @@
 <?php
 require_once "class.Request.php";
-require_once __DIR__.'..\validator\class.BaseValidator.php';
+// require_once __DIR__."..\middleware\class.AuthMiddleware.php";
 
 class Rotas{
     public $rotas;

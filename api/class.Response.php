@@ -1,7 +1,59 @@
 <?php
 
 class Response {
-    static function Success(string $mensagem, array|object|null $dados = null) :array{
+    static function Errors(string $type){
+        return match ($type) {
+            'DATABASE_ERROR' => [
+                'group' => 'DATABASE',
+                'http' => 500,
+            ],
+            'INVALID_ARGUMENT_ERROR' => [
+                'group' => 'VALIDATION',
+                'http' => 422,
+            ],
+            'AUTHENTICATION_ERROR' => [
+                'group' => 'AUTHENTICATION',
+                'http' => 401,
+            ],
+            'VALIDATION_INVALID_EMAIL_ERROR' => [
+                'group' => 'VALIDATION',
+                'http' => 422,
+            ],
+            'VALIDATION_MISSING_EMAIL_ERROR' => [
+                'group' => 'VALIDATION',
+                'http' => 422,
+            ],
+            'VALIDATION_INVALID_PASSWORD_ERROR' => [
+                'group' => 'VALIDATION',
+                'http' => 422,
+            ],
+            'VALIDATION_MISSING_PASSWORD_ERROR' => [
+                'group' => 'VALIDATION',
+                'http' => 422,
+            ],
+            default => [
+                'group' => 'UNKNOWN',
+                'http' => 400,
+            ],
+        };
+    }
+    
+    static function Error(string $type, array|object|null $dados = null) :array{
+        $erro = Response::Errors($type);
+        http_response_code($erro['http']);
+
+        $resposta = [
+            'erro' => true,
+            'group' => $erro['group'],
+            'type' => $type,
+        ];
+        if(!is_null($dados)){
+            $resposta['resposta'] = (array) $dados;
+        }
+        return $resposta;
+    }
+
+    static function Success(string $mensagem = "", array|object|null $dados = null) :array{
         $resposta = [
             'erro' => false,
             'mensagem' => $mensagem,
@@ -10,18 +62,6 @@ class Response {
             $resposta['resposta'] = (array) $dados;
         }
         http_response_code(200);
-        return $resposta;
-    }
-
-    static function Error(string $mensagem, array|object|null $dados = null) :array{
-        $resposta = [
-            'erro' => true,
-            'mensagem' => $mensagem,
-        ];
-        if(!is_null($dados)){
-            $resposta['resposta'] = (array) $dados;
-        }
-        http_response_code(400);
         return $resposta;
     }
 }

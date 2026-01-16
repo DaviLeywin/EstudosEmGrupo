@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '\..\validator\class.BaseValidator.php';
 
 class UsuariosModel {
     public string $NOME;
@@ -31,11 +30,13 @@ class UsuariosModel {
     }
 
     public function UpdateSenhaHash(string $Senha){
+        if(!UsuariosValidator::ValidarSenha($Senha)){
+            throw new InvalidArgumentException('O campo Senha deve conter entre 6 e 8 caracteres!');
+        }
         if(!BaseValidator::ValidarCaracteres($Senha, '0-9a-zA-Z\-\_\@\.')){
             throw new InvalidArgumentException('O campo Senha deve conter apenas os seguintes caracteres: 0-9 a-z A-Z - _ @ .');
-        }   
-        $hash = password_hash($Senha, PASSWORD_DEFAULT);      
-        $this->SENHA_HASH = str_ireplace('$','\$',$hash);
+        }         
+        $this->SENHA_HASH = UsuariosValidator::CodificarSenha($Senha);
     }
 
     public function UpdateFotoDePerfil(string $FotoDePerfil){
@@ -56,7 +57,7 @@ class UsuariosModel {
         if(!BaseValidator::ValidarTamanho($Email, 100)){
             throw new InvalidArgumentException('O campo Email deve conter no maximo 100 caracteres!');
         }
-        if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
+        if (!UsuariosValidator::ValidarEmail($Email)) {
             throw new InvalidArgumentException('O campo Email esta em um formato invalido!');
         }
         $this->EMAIL = $Email;     

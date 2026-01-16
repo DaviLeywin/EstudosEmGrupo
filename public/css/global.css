@@ -1,0 +1,169 @@
+*{margin: 0;padding: 0;box-sizing: border-box;}
+
+body{ 
+    width: 100%;
+    height:100vh;
+    box-sizing:border-box;
+}
+
+#root{
+    width: 100%;
+    height: 100%;
+}
+
+#login-page{
+    background-color: rgb(103, 103, 103);
+    background-repeat: no-repeat ;
+    background-size: 100% 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1vw;
+    
+}
+#login-page #login-data{
+    margin: 5px;
+    height: 420px;
+    width: 300px;
+    background-color: white;
+    border: solid 2px rgb(255, 255, 255);
+    border-radius: 5px;
+    background-color: rgb(45, 45, 45);
+
+}
+#login-page #login-data h1{
+    text-align: center;
+    color: white;
+    margin: 5px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+#login-page #form-login{
+    margin: 10px;
+}
+#login-page #buttons-article .normal-btn{
+    background-color: rgb(45, 45, 45);
+    color: white;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border:solid 1px white;
+}
+#login-page #buttons-article{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 10px;
+    margin-top: 20px;
+}
+#login-page #buttons-article .normal-btn:hover{
+    background-color: rgb(70, 70, 70);
+    cursor: pointer;
+}
+#login-page #btn-logar{
+    background-color: rgb(154, 154, 154);
+    color: rgb(0, 0, 0);
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border:solid 1px white;
+}
+#login-page #btn-logar:hover{
+    background-color: rgb(200, 200, 200);
+    cursor: pointer;
+}
+#login-page #login-article ,#password-article{
+    background-color: whitesmoke;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    margin: 3px;
+    align-items: center;
+    justify-content: center;
+}
+#login-page #login-article input,
+#login-page #login-article input:focus,
+#login-page #login-article input:active {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    outline: none;
+    background-color: rgb(110, 110, 110);
+    border-radius: 10px;
+    margin: 2px;
+    font-size: 12px;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+#login-page #password-article input,
+#login-page #password-article input:focus,
+#login-page #password-article input:active {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    outline: none;
+    background-color: rgb(110, 110, 110);
+    border-radius: 10px;
+    margin: 2px;
+    font-size: 12px;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+#login-page input:-webkit-autofill,
+#login-page input:-webkit-autofill:hover,
+#login-page input:-webkit-autofill:focus,
+#login-page input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgb(110, 110, 110) inset !important;
+    -webkit-text-fill-color: white !important;
+    caret-color: white;
+    transition: background-color 9999s ease-in-out 0s;
+}
+#login-page #form-login{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#login-page span{
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-left: 5px;
+    font-size: 18px;
+}
+#login-page #remember-check{
+    margin-left: 5px;
+    width: 15px;
+    height: 15px;
+    border: none;
+    border-radius: 100%;
+    background-color: rgb(200, 200, 200);
+}
+#login-page #remember-label{
+    color: white;
+}
+#login-page #error-message{
+    visibility:hidden;
+    font-size: 14px;
+    margin-top: 10px;
+}
+#login-page #remember-article{
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    gap: 5px;
+}
+#login-page #show-password{
+    background-color: rgb(45, 45, 45);
+    color: white;
+    width: auto;
+    padding: 10px;
+    border-radius: 10px;
+    border:solid 1px white;
+    margin-top: 5px;
+}
+#login-page #show-password:hover{
+    background-color: rgb(70, 70, 70);
+    cursor: pointer;
+}

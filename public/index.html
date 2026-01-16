@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiteDeEstudos</title>
+    <link rel="stylesheet" href="/EstudosEmGrupo/public/css/global.css">
+</head>
+<body>
+    <div id="root">
+        <div id="login-page">
+            <section id="login-data">
+                <h1>Login</h1>
+                <form id="form-login">
+                    <article id="login-article">
+                        <label for="email" >Email:</label>
+                        <input type="text" name="email" id="email" autocomplete="username email" value="lucas@example.com">
+                    </article>
+                    <article id="password-article">
+                        <label for="password">Senha:</label>
+                        <input type="password" name="password" id="password" autocomplete="current-password" value="senha01">
+                    </article>
+                    <button class="normal-btn" type="button" id="show-password" >Mostrar Senha</button>
+                    <article id="remember-article">
+                        <input type="checkbox" name="remember-check" id="remember-check">
+                        <label for="remember-check" id="remember-label">Lembrar-me</label>
+                    </article>
+                    <span id="error-message">mensagem vazia</span>
+                    <article id="buttons-article">
+                        <button class="normal-btn" id="btn-esqueci-senha">Esqueci minha senha</button>
+                        <button class="normal-btn" id="btn-cadastrar">Cadastra-se</button>
+                        <button type="submit" id="btn-logar">Logar</button>
+                    </article>
+                </form>
+            </section>
+        </div>
+    </div>
+    <script type="module" src="/EstudosEmGrupo/public/js/app.js"></script>
+    <script type="module" src="/EstudosEmGrupo/public/js/pages/login.js"></script>
+</body>
+</html>

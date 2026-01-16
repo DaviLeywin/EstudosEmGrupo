@@ -1,9 +1,10 @@
 <?php
-$db = [
-    'host' => 'localhost',
-    'password' => '',
-    'user' => 'root',
-    'database' => 'EstudosEmGrupo',
+return [
+    'db' => [
+        'host' => 'localhost',
+        'password' => '',
+        'user' => 'root',
+        'database' => 'EstudosEmGrupo',
+    ]
 ];
-
 ?>
